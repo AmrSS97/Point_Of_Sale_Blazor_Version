@@ -1,0 +1,60 @@
+﻿@page "/purchaseorders"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Purchase Orders <a href="/purchaseorders/createpurchaseorder" class="btn btn-success"><span class="oi oi-plus">&nbsp;</span>Purchase Order</a> </h3>
+@if (PurchaseOrders == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Product</th>
+                <th>Supplier</th>
+                <th>Quantity</th>
+                <th>Price/Unit</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var PurchaseOrder in PurchaseOrders)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@PurchaseOrder.ProductName</td>
+                    <td>@PurchaseOrder.SupplierName</td>
+                    <td>@PurchaseOrder.PurchasedQuantity</td>
+                    <td>@PurchaseOrder.UnitPrice</td>
+                    <td>@PurchaseOrder.PurchaseDate</td>
+                    <td><a href="/purchaseorders/editpurchaseorder/@PurchaseOrder.PurchaseOrderID.ToString()" class="btn btn-info"><span class="oi oi-pencil"></span></a>&nbsp;<button class="btn btn-danger" @onclick="() => DeletePurchaseOrder(PurchaseOrder)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<PurchaseOrder> PurchaseOrders;
+    private int Counter = 1;
+    protected override async Task OnInitializedAsync()
+    {
+        PurchaseOrders = await Http.GetFromJsonAsync<List<PurchaseOrder>>("http://localhost:5000/api/PurchaseOrder");
+    }
+
+    private async Task DeletePurchaseOrder(PurchaseOrder PurchaseOrder)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete customer ?"); // Confirm
+        if (confirmed)
+        {
+            PurchaseOrders.Remove(PurchaseOrder);
+            await Http.DeleteAsync("http://localhost:5000/api/PurchaseOrder/" + PurchaseOrder.PurchaseOrderID);
+        }
+        return;
+    }
+}

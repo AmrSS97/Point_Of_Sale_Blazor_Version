@@ -1,0 +1,58 @@
+﻿@page "/bills"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Bills</h3>
+@if (Bills == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Customer</th>
+                <th>Payment</th>
+                <th>Bill Value</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Bill in Bills)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@Bill.CustomerName</td>
+                    <td>@Bill.PaymentType</td>
+                    <td>@Bill.TotalValue</td>
+                    <td>@Bill.BillDate</td>
+                    <td><button class="btn btn-danger" @onclick="() => DeleteProduct(Bill)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Bill> Bills;
+    private int Counter = 1;
+    protected override async Task OnInitializedAsync()
+    {
+        Bills = await Http.GetFromJsonAsync<List<Bill>>("http://localhost:5000/api/Bill");
+    }
+
+    protected async Task DeleteProduct(Bill Bill)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete bill ?"); // Confirm
+        if (confirmed)
+        {
+            Bills.Remove(Bill);
+            await Http.DeleteAsync("http://localhost:5000/api/Product/" + Bill.BillID);
+        }
+        return;
+    }
+}

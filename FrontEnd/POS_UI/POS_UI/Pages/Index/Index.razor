@@ -1,0 +1,74 @@
+﻿@page "/"
+@inject HttpClient Http
+@using Models
+<div class="row" style="padding:20px;">
+    <div class="col text-center">
+        <h1>NetPOS&nbsp;Software</h1>
+    </div>
+</div>
+
+    <div class="row" style="padding:20px;">
+        <div class="col text-center">
+            <img src="/Images/pexels-photo-3907161.webp" />
+        </div>
+    </div>
+
+
+    <div class="row" style="padding:20px;">
+        <div class="col">
+            <div class="card text-dark bg-primary mb-3 text-center">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="oi oi-british-pound"></span></h5>
+                    <p class="card-text paragraph">Total Sales</p>
+                    <span class="paragraph">@GetTotalSales()</span>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-dark bg-warning mb-3 text-center">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="oi oi-people"></span></h5>
+                    <p class="card-text paragraph">Total Customers</p>
+                    <span class="paragraph">@Customers.Count()</span>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card text-dark bg-success mb-3 text-center">
+                <div class="card-body">
+                    <h5 class="card-title"><span class="oi oi-box"></span></h5>
+                    <p class="card-text paragraph">Total Products</p>
+                    <span class="paragraph">@Products.Count()</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <p class="paragraph">NetPOS is a software designed to handle operations for a point of sale facility.</p>
+        </div>
+    </div>
+@code
+{
+    private List<Models.Customer> Customers = new List<Models.Customer>();
+    private List<Models.Sale> Sales = new List<Models.Sale>();
+    private List<Models.Product> Products = new List<Models.Product>();
+    private double TotalSales { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customers = await Http.GetFromJsonAsync<List<Models.Customer>>("http://localhost:5000/api/Customer");
+        Sales = await Http.GetFromJsonAsync<List<Models.Sale>>("http://localhost:5000/api/Sale");
+        Products = await Http.GetFromJsonAsync<List<Models.Product>>("http://localhost:5000/api/Product");
+    }
+
+    private double GetTotalSales()
+    {
+        foreach(var Sale in Sales)
+        {
+            TotalSales += (Sale.ProductPrice * Sale.SoldQuantity);
+        }
+        return TotalSales;
+    }
+}
+

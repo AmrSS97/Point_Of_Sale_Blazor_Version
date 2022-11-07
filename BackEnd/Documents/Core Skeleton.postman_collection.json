@@ -1,0 +1,262 @@
+{
+	"info": {
+		"_postman_id": "9f7379a7-a588-482a-a537-ff165f7bf9e5",
+		"name": "Core Skeleton",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "User List",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+								"description": " ",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/WebAPI/api/Users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"WebAPI",
+								"api",
+								"Users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"RoleID\" : 1,\n        \"FullName\":\"Test\",\n        \"UserName\":\"test\",\n        \"UserEmail\":\"test@test.com\",\n        \"UserPassword\": \"123\",\n        \"IsActive\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/WebAPI/api/Users",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"WebAPI",
+								"api",
+								"Users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"UserID\": 2,\r\n  \"RoleID\": 1,\r\n  \"FullName\": \"Test test\",\r\n  \"UserName\": \"test\",\r\n  \"UserEmail\": \"test@test.com\",\r\n  \"UserPassword\": \"123\",\r\n  \"IsActive\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost/WebAPI/api/Users/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"WebAPI",
+								"api",
+								"Users",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost/WebAPI/api/Users/2",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"path": [
+								"WebAPI",
+								"api",
+								"Users",
+								"2"
+							],
+							"query": [
+								{
+									"key": "Authorization",
+									"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"UserName\":\"admin\",\n\t\"Password\":\"123\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/WebAPI/api/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"WebAPI",
+						"api",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJSb2xlSWQiOiIxIiwiVXNlcklkIjoiMSIsIm5iZiI6MTU3NzM2Mjg5OCwiZXhwIjoxNTgyNTQ2ODk4LCJpc3MiOiJlbm96b20iLCJhdWQiOiJlbm96b20ifQ.v2dH-LBtwFgNvsq9VeKtHFN1oCL2fmXyfLw1SeHT1jc",
+						"description": " ",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "",
+							"type": "file",
+							"src": "/C:/Users/Sawsan/Downloads/imageedit_2_7223691615.png"
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost/WebAPI/api/Upload",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"WebAPI",
+						"api",
+						"Upload"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

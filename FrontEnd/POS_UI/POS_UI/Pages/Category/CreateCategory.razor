@@ -1,0 +1,40 @@
+﻿@page "/categories/createcategory"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<EditForm Model="@Category" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-spreadsheet"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Category Name:</label>
+        <InputText id="name" class="form-control" placeholder="Enter a category name" @bind-Value="Category.CategoryName" />
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private Category Category = new Category();
+    private async void HandleValidSubmit()
+    {
+
+        // Process the valid form
+        var Responce = await Http.PostAsJsonAsync<Category>("http://localhost:5000/api/Category", Category);
+        if (Responce.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            NavManager.NavigateTo("/categories");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Category Already Exists !");
+        }
+    }
+}

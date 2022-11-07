@@ -1,0 +1,87 @@
+﻿@page "/products/editproduct/{ProductID}"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@using Models
+
+<EditForm Model="@Product" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-box"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Product Name:</label>
+        <InputText id="name" class="form-control" placeholder="Enter product name" @bind-Value="Product.ProductName" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Category Name:</label>
+        <InputSelect class="form-control" @bind-Value="@Product.CategoryName">
+            <option value="">Select category ...</option>
+            @foreach (var Category in Categories)
+            {
+                <option value="@Category.CategoryName">@Category.CategoryName</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Name:</label>
+        <InputSelect class="form-control" @bind-Value="@Product.SupplierName" @onclick="() => GetSupplierPhone()">
+            <option value="">Select supplier ...</option>
+            @foreach (var Supplier in Suppliers)
+            {
+                <option value="@Supplier.SupplierName">@Supplier.SupplierName</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Phone:</label>
+        <InputText id="name" class="form-control" placeholder="Enter supplier phone" @bind-Value="Product.SupplierPhone" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Price:</label>
+        <InputNumber id="name" class="form-control" placeholder="Enter product price" @bind-Value="Product.Price" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Stock:</label>
+        <InputNumber id="name" class="form-control" placeholder="Enter product stock" @bind-Value="Product.Stock" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Discount Percentage:</label>
+        <InputNumber id="name" class="form-control" placeholder="Enter product dicount percentage" @bind-Value="Product.DiscountPercentage" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Product Description:</label>
+        <InputTextArea id="textarea" class="form-control" placehodler="Enter product details" @bind-Value="Product.ProductDetails"></InputTextArea>
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+</EditForm>
+    @code {
+        [Parameter]
+        public string ProductID { get; set; }
+        private Product Product = new Product();
+        private List<Category> Categories = new List<Category>();
+        private List<Supplier> Suppliers = new List<Supplier>();
+
+        protected override async Task OnInitializedAsync()
+        {
+            Product = await Http.GetFromJsonAsync<Product>("http://localhost:5000/api/Product/" + Guid.Parse(ProductID));
+            Categories = await Http.GetFromJsonAsync<List<Category>>("http://localhost:5000/api/Category");
+            Suppliers = await Http.GetFromJsonAsync<List<Supplier>>("http://localhost:5000/api/Supplier");
+        }
+        private async void HandleValidSubmit()
+        {
+            // Process the valid form
+            await Http.PutAsJsonAsync<Product>("http://localhost:5000/api/Product/" + Guid.Parse(ProductID), Product);
+            NavManager.NavigateTo("/products");
+        }
+        private void GetSupplierPhone()
+        {
+            Product.SupplierPhone = Suppliers.Where(s => s.SupplierName == Product.SupplierName).FirstOrDefault().SupplierPhone;
+        }
+         }

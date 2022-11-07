@@ -1,0 +1,11 @@
+2021-08-09 22:48:29.650 +02:00 [ERR] 
+System.InvalidOperationException: No template exists with key 'verification'
+   at RazorEngine.Templating.RazorEngineService.GetCompiledTemplate(ITemplateKey key, Type modelType, Boolean compileOnCacheMiss)
+   at RazorEngine.Templating.RazorEngineService.Run(ITemplateKey key, TextWriter writer, Type modelType, Object model, DynamicViewBag viewBag)
+   at RazorEngine.Templating.DynamicWrapperService.Run(ITemplateKey key, TextWriter writer, Type modelType, Object model, DynamicViewBag viewBag)
+   at RazorEngine.Templating.RazorEngineServiceExtensions.Run(IRazorEngineService service, String name, TextWriter writer, Type modelType, Object model, DynamicViewBag viewBag)
+   at RazorEngine.Templating.RazorEngineServiceExtensions.<>c__DisplayClass23_0.<Run>b__0(TextWriter writer)
+   at RazorEngine.Templating.RazorEngineServiceExtensions.WithWriter(Action`1 withWriter)
+   at RazorEngine.Templating.RazorEngineServiceExtensions.Run(IRazorEngineService service, String name, Type modelType, Object model, DynamicViewBag viewBag)
+   at Notifications.EmailConnector.PreapareNotificationMessage(Object messageObj, String templateName, List`1 receiverEmails, List`1 receiverPhones) in C:\Users\AmrSherief\Desktop\PointOfSale\Project\BackEnd\Code\Notifications\Modules\EmailConnector.cs:line 20
+   at Notifications.NotificationConnector.SendNotification(Object messageObj, String templateName, List`1 receiverEmails, List`1 receiverPhones) in C:\Users\AmrSherief\Desktop\PointOfSale\Project\BackEnd\Code\Notifications\NotificationConnector.cs:line 18

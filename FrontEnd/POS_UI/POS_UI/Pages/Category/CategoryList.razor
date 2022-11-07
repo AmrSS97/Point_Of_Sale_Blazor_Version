@@ -1,0 +1,53 @@
+﻿@page "/categories"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Categories <a href="/categories/createcategory" class="btn btn-success"><span class="oi oi-plus">&nbsp;</span>Category</a></h3>
+@if (categories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>No. Of Products</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categories)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@category.CategoryName</td>
+                    <td>@category.ProductsCount</td>
+                    <td><a href="/categories/editcategory/@category.CategoryID.ToString()" class="btn btn-info"><span class="oi oi-pencil"></span></a>&nbsp;<button class="btn btn-danger" @onclick="() => DeleteCategory(category)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Category> categories;
+    private int Counter = 1;
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await Http.GetFromJsonAsync<List<Category>>("http://localhost:5000/api/Category");
+    }
+    protected async Task DeleteCategory(Category category)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete category ?"); // Confirm
+        if (confirmed)
+        {
+            categories.Remove(category);
+            await Http.DeleteAsync("http://localhost:5000/api/Category/" + category.CategoryID);
+        }
+        return;
+    }
+}

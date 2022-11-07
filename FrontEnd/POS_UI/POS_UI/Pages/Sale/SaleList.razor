@@ -1,0 +1,65 @@
+﻿@page "/sales"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Sales</h3>
+@if (Sales == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price/Unit</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Sale in Sales)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@Sale.ProductName</td>
+                    <td>@Sale.SoldQuantity</td>
+                    <td>@Sale.ProductPrice E£</td>
+                    <td>@GetTotalSales(Sale) E£</td>
+                    <th>@Sale.SaleDate</th>
+                    <td><button class="btn btn-danger" @onclick="() => DeleteSale(Sale)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Sale> Sales;
+    private int Counter = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Sales = await Http.GetFromJsonAsync<List<Sale>>("http://localhost:5000/api/Sale");
+    }
+
+    protected async Task DeleteSale(Sale Sale)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete sale ?"); // Confirm
+        if (confirmed)
+        {
+            Sales.Remove(Sale);
+            await Http.DeleteAsync("http://localhost:5000/api/Sale/" + Sale.SaleID);
+        }
+        return;
+    }
+    protected double GetTotalSales(Sale Sale)
+    {
+        return Sale.ProductPrice * Sale.SoldQuantity;
+    }
+}

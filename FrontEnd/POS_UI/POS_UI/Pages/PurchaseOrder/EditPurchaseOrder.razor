@@ -1,0 +1,72 @@
+﻿@page "/purchaseorders/editpurchaseorder/{PurchaseOrderID}"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@using Models
+
+<EditForm Model="@PurchaseOrder" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-arrow-bottom"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Product:</label>
+        <InputText id="name" class="form-control" placeholder="Enter product name" @bind-Value="PurchaseOrder.ProductName" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Name:</label>
+        <InputSelect class="form-control" @bind-Value="@PurchaseOrder.SupplierName" @onclick="() => GetSupplierPhone()">
+            <option value="">Select supplier ...</option>
+            @foreach (var Supplier in Suppliers)
+            {
+                <option value="@Supplier.SupplierName">@Supplier.SupplierName</option>
+            }
+        </InputSelect>
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Phone:</label>
+        <InputText id="name" class="form-control" placeholder="Enter supplier phone" @bind-Value="PurchaseOrder.SupplierPhone" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Purchase Order Date:</label>
+        <InputDate id="name" class="form-control" placeholder="Enter purchase order date" @bind-Value="PurchaseOrder.PurchaseDate" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Quantity:</label>
+        <InputNumber id="name" class="form-control" placeholder="Enter purchased quantity" @bind-Value="PurchaseOrder.PurchasedQuantity" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Price:</label>
+        <InputNumber id="name" class="form-control" placeholder="Enter product price" @bind-Value="PurchaseOrder.UnitPrice" />
+    </div>
+   <div class="row">
+       <div class="col text-center">
+           <button type="submit" class="btn btn-primary">Update</button>
+       </div>
+   </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string PurchaseOrderID { get; set; }
+    private PurchaseOrder PurchaseOrder = new PurchaseOrder();
+    private List<Supplier> Suppliers = new List<Supplier>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        PurchaseOrder = await Http.GetFromJsonAsync<PurchaseOrder>("http://localhost:5000/api/PurchaseOrder/" + Guid.Parse(PurchaseOrderID));
+        Suppliers = await Http.GetFromJsonAsync<List<Supplier>>("http://localhost:5000/api/Supplier");
+    }
+    private async void HandleValidSubmit()
+    {
+        // Process the valid form
+        await Http.PutAsJsonAsync<PurchaseOrder>("http://localhost:5000/api/PurchaseOrder/" + Guid.Parse(PurchaseOrderID), PurchaseOrder);
+        NavManager.NavigateTo("/purchaseorders");
+    }
+    private void GetSupplierPhone()
+    {
+        PurchaseOrder.SupplierPhone = Suppliers.Where(s => s.SupplierName == PurchaseOrder.SupplierName).FirstOrDefault().SupplierPhone;
+    }
+}

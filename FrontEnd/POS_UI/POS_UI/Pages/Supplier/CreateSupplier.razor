@@ -1,0 +1,48 @@
+﻿@page "/suppliers/createsupplier"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+
+<EditForm Model="@Supplier" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-person"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Supplier Name:</label>
+        <InputText id="name" class="form-control" placeholder="Enter supplier name" @bind-Value="Supplier.SupplierName" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Email:</label>
+        <InputText id="name" class="form-control" placeholder="Enter supplier email" @bind-Value="Supplier.SupplierEmail" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Supplier Phone:</label>
+        <InputText id="name" class="form-control" placeholder="Enter supplier phone" @bind-Value="Supplier.SupplierPhone" />
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private Supplier Supplier = new Supplier();
+    private async void HandleValidSubmit()
+    {
+        // Process the valid form
+        var Responce = await Http.PostAsJsonAsync<Supplier>("http://localhost:5000/api/Supplier", Supplier);
+        if (Responce.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            NavManager.NavigateTo("/suppliers");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Supplier Already Exists !");
+        }
+    }
+}

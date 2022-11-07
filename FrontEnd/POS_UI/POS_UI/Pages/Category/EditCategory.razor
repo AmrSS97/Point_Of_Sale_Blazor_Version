@@ -1,0 +1,41 @@
+﻿@page "/categories/editcategory/{CategoryID}"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@using Models
+
+<EditForm Model="@Category" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-spreadsheet"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Category Name:</label>
+        <InputText id="name" class="form-control" placeholder="Enter a category name" @bind-Value="Category.CategoryName" />
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary">Update</button>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter]
+    public string CategoryID { get; set; }
+    private Category Category = new Category();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Category = await Http.GetFromJsonAsync<Category>("http://localhost:5000/api/Category/" + Guid.Parse(CategoryID));
+    }
+    private async void HandleValidSubmit()
+    {
+        // Process the valid form
+        await Http.PutAsJsonAsync<Category>("http://localhost:5000/api/Category/" + Guid.Parse(CategoryID), Category);
+        NavManager.NavigateTo("/categories");
+    }
+}
+

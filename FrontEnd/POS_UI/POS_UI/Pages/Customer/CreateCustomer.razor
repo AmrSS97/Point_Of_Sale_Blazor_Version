@@ -1,0 +1,51 @@
+﻿@page "/customers/createcustomer"
+@inject NavigationManager NavManager
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<EditForm Model="@Customer" OnValidSubmit="@HandleValidSubmit" class="center">
+    <div class="row">
+        <div class="col text-center">
+            <span class="oi oi-person"></span>
+        </div>
+    </div>
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="mb-3">
+        <label for="name">Customer Name:</label>
+        <InputText id="name" class="form-control" placeholder="Enter customer name" @bind-Value="Customer.FullName" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Customer Email:</label>
+        <InputText id="name" class="form-control" placeholder="Enter customer email" @bind-Value="Customer.CustomerEmail" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Customer Phone:</label>
+        <InputText id="name" class="form-control" placeholder="Enter customer phone" @bind-Value="Customer.CustomerPhone" />
+    </div>
+    <div class="mb-3">
+        <label for="name">Customer Address:</label>
+        <InputText id="name" class="form-control" placeholder="Enter customer address" @bind-Value="Customer.CustomerAddress" />
+    </div>
+    <div class="row">
+        <div class="col text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+</EditForm>
+@code {
+    private Customer Customer = new Customer();
+    private async void HandleValidSubmit()
+    {
+        // Process the valid form
+        var Responce = await Http.PostAsJsonAsync<Customer>("http://localhost:5000/api/Customer", Customer);
+        if (Responce.StatusCode == System.Net.HttpStatusCode.OK)
+        {
+            NavManager.NavigateTo("/customers");
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Customer Already Exists !");
+        }
+    }
+}

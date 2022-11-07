@@ -1,0 +1,59 @@
+﻿@page "/customers"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Customers <a href="/customers/createcustomer" class="btn btn-success"><span class="oi oi-plus">&nbsp;</span>Customer</a></h3>
+@if (customers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Address</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var customer in customers)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@customer.FullName</td>
+                    <td>@customer.CustomerEmail</td>
+                    <td>@customer.CustomerPhone</td>
+                    <td>@customer.CustomerAddress</td>
+                    <td><a href="/customers/editcustomer/@customer.CustomerID.ToString()" class="btn btn-info"><span class="oi oi-pencil"></span></a>&nbsp;<button class="btn btn-danger" @onclick="() => DeleteCustomer(customer)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Customer> customers;
+    private int Counter = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        customers = await Http.GetFromJsonAsync<List<Customer>>("http://localhost:5000/api/Customer");
+    }
+    protected async Task DeleteCustomer(Customer customer)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete customer ?"); // Confirm
+        if (confirmed)
+        {
+            customers.Remove(customer);
+            await Http.DeleteAsync("http://localhost:5000/api/Customer/" + customer.CustomerID);
+        }
+        return;
+    }
+
+}

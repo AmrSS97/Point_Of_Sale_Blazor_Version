@@ -1,0 +1,215 @@
+﻿@page "/createbill"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@inject NavigationManager NavManager
+@using Models
+<div class="container-fluid">
+    <div class="row">
+        <div class="col">
+            <table class="table text-center border">
+                <thead class="table-head">
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Item in Bill.ItemDtoList)
+                    {
+                        <tr>
+                            <td>@Item.ProductName</td>
+                            <td>@Item.ItemQuantity</td>
+                            <td>@(Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Price*Item.ItemQuantity) E£</td>
+                            <td><button class="btn btn-success" @onclick="() => IncrementItemQuantity(Item)"><span class="oi oi-plus"></span></button>&nbsp;<button class="btn btn-danger" @onclick="() => DecrementItemQuantity(Item)"><span class="oi oi-minus"></span></button></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td class="text-left">Total Amount</td>
+                        <td></td>
+                        <td>@TotalAmount E£</td>
+                        <td></td>
+                    </tr>
+                    @foreach (var Discount in Discounts)
+                    {
+                        <tr>
+                            <td class="text-left">@Discount.ProductName&nbsp;discount</td>
+                            <td></td>
+                            <td>(@Discount.DiscountAmount) E£</td>
+                            <td></td>
+                        </tr>
+                    }
+                    <tr>
+                        <td class="text-left">Amount Due</td>
+                        <td></td>
+                        <td>@GetAmountDue() E£</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <br />
+            <div class="row">
+                <div class="col text-center">
+                    <button class="btn btn-primary" @onclick="() => PostBill()"><span class="oi oi-print"></span>&nbsp;Print</button>
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <table class="table text-center border">
+                <thead class="table-head">
+                    <tr>
+                        <th>Product</th>
+                        <th>Discount</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var Product in Products)
+                    {
+                        <tr>
+                            <td>@Product.ProductName</td>
+                            <td>@Product.DiscountPercentage%</td>
+                            <td>@Product.Price E£</td>
+                            <td>@Product.Stock</td>
+                            <td><button class="btn btn-outline-success" @onclick="() => AddToItemList(Product)">ADD TO CART</button>&nbsp;<button class="btn btn-info">i</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <h3>Customer Details:&nbsp;<a href="/customers/createcustomer" class="btn btn-success"><span class="oi oi-plus"></span>&nbsp;New Customer</a></h3>
+            <EditForm Model="@Bill">
+                <div class="sm-padding">
+                <label for="name">Customer Name:</label>
+                <InputSelect class="form-control" @bind-Value="Bill.CustomerName">
+                    <option value="">Select customer ...</option>
+                    @foreach (var Customer in Customers)
+                    {
+                        <option value="@Customer.FullName">@Customer.FullName</option>
+                    }
+                </InputSelect>
+              </div>
+        <div class="sm-padding">
+            <label for="name">Payment:</label>
+            <InputSelect class="form-control" @bind-Value="Bill.PaymentType">
+                <option value="">Select payment type...</option>
+                <option value="Cash">Cash</option>
+                <option value="Debit/Credit">Debit/Credit</option>
+            </InputSelect>
+        </div>
+        </EditForm>
+    </div>
+    </div>
+</div>
+
+@code {
+    private List<Product> Products = new List<Product>();
+    private List<Discount> Discounts = new List<Discount>();
+    private List<Customer> Customers = new List<Customer>();
+    private Bill Bill = new Bill();
+    private double TotalAmount = 0;
+    private double TotalDiscount = 0;
+    private bool IsValid;
+    protected override async Task OnInitializedAsync()
+    {
+        Bill.ItemDtoList = new List<Item>();
+        Products = await Http.GetFromJsonAsync<List<Product>>("http://localhost:5000/api/Product");
+        Customers = await Http.GetFromJsonAsync<List<Customer>>("http://localhost:5000/api/Customer");
+    }
+    private async Task AddToItemList(Product Product)
+    {
+        Item CheckItem = Bill.ItemDtoList.Where(i => i.ProductName == Product.ProductName).FirstOrDefault();
+        if (CheckItem == null)
+        {
+            Item Item = new Item();
+            Item.ProductName = Product.ProductName;
+            Item.ItemQuantity = 1;
+            await DecrementProductStock(Item);
+            if (IsValid)
+            {
+                Discount Discount = new Discount();
+                Bill.ItemDtoList.Add(Item);
+                Discount.ProductName = Item.ProductName;
+                Discount.DiscountAmount = Product.Price * Product.DiscountPercentage * 0.01;
+                Discounts.Add(Discount);
+                TotalAmount += Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Price;
+
+            }
+        }
+        else
+        {
+            await DecrementProductStock(CheckItem);
+            if (IsValid)
+            {
+                Bill.ItemDtoList.Where(i => i.ProductName == Product.ProductName).FirstOrDefault().ItemQuantity++;
+                TotalAmount += Products.Where(p => p.ProductName == CheckItem.ProductName).FirstOrDefault().Price;
+                Discounts.Where(d => d.ProductName == Product.ProductName).FirstOrDefault().DiscountAmount *= 2;
+            }
+        }
+    }
+    private async Task IncrementItemQuantity(Item Item)
+    {
+        await DecrementProductStock(Item);
+        if (IsValid)
+        {
+            Bill.ItemDtoList.Where(i => i.ProductName == Item.ProductName).FirstOrDefault().ItemQuantity++;
+            TotalAmount += Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Price;
+            Discounts.Where(d => d.ProductName == Item.ProductName).FirstOrDefault().DiscountAmount *= 2;
+        }
+    }
+    private void DecrementItemQuantity(Item Item)
+    {
+        int value = --Bill.ItemDtoList.Where(i => i.ProductName == Item.ProductName).FirstOrDefault().ItemQuantity;
+        TotalAmount -= Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Price;
+        IncrementProductStock(Item);
+        if (value < 1)
+        {
+            Bill.ItemDtoList.Remove(Item);
+            Discount Discount = Discounts.Where(d => d.ProductName == Item.ProductName).FirstOrDefault();
+            Discounts.Remove(Discount);
+        }
+        else
+        {
+            Discounts.Where(d => d.ProductName == Item.ProductName).FirstOrDefault().DiscountAmount /= 2;
+        }
+    }
+    private void IncrementProductStock(Item Item)
+    {
+        Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Stock++;
+    }
+    private async Task DecrementProductStock(Item Item)
+    {
+        int StockValue = Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Stock;
+        if (StockValue > 0)
+        {
+            Products.Where(p => p.ProductName == Item.ProductName).FirstOrDefault().Stock--;
+            IsValid = true;
+        }
+        else
+        {
+            await JSRuntime.InvokeVoidAsync("alert", "Product Out Of Stock !");
+            IsValid = false;
+        }
+    }
+    private double GetAmountDue()
+    {
+        TotalDiscount = 0;
+        foreach (var Discount in Discounts)
+        {
+            TotalDiscount += Discount.DiscountAmount;
+        }
+        return TotalAmount - TotalDiscount;
+    }
+
+    private async Task PostBill()
+    {
+        Bill.TotalValue = GetAmountDue();
+        Bill.UserName = "admin";
+        Bill.CustomerPhone = Customers.Where(c => c.FullName == Bill.CustomerName).FirstOrDefault().CustomerPhone;
+        Bill.BillDate = DateTime.Now;
+        await Http.PostAsJsonAsync<Bill>("http://localhost:5000/api/Bill", Bill);
+        NavManager.NavigateTo("/");
+    }
+}

@@ -1,0 +1,54 @@
+﻿@page "/users"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Suppliers<a href="/users/createuser" class="btn btn-success"><span class="oi oi-plus">&nbsp;</span>Supplier</a></h3>
+@if (Suppliers == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Supplier in Suppliers)
+            {
+                <tr>
+                    <td>@Supplier.SupplierName</td>
+                    <td>@Supplier.SupplierEmail</td>
+                    <td>@Supplier.SupplierPhone</td>
+                    <td><a href="/suppliers/editsupplier/@Supplier.SupplierID.ToString()" class="btn btn-info"><span class="oi oi-pencil"></span></a>&nbsp;<button class="btn btn-danger" @onclick="() => DeleteSupplier(Supplier)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Supplier> Suppliers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Suppliers = await Http.GetFromJsonAsync<List<Supplier>>("http://localhost:5000/api/Supplier");
+    }
+
+    protected async Task DeleteSupplier(Supplier Supplier)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete supplier ?"); // Confirm
+        if (confirmed)
+        {
+            Suppliers.Remove(Supplier);
+            await Http.DeleteAsync("http://localhost:5000/api/Supplier/" + Supplier.SupplierID);
+        }
+        return;
+    }
+}

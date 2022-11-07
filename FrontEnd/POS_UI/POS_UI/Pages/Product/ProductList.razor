@@ -1,0 +1,62 @@
+﻿@page "/products"
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@using Models
+<h3>Products <a href="/products/createproduct" class="btn btn-success"><span class="oi oi-plus">&nbsp;</span>Product</a></h3>
+@if (Products == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table text-center border">
+        <thead class="table-head">
+            <tr>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Discount</th>
+                <th>Supllier</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var Product in Products)
+            {
+                <tr>
+                    <td>@(Counter++)</td>
+                    <td>@Product.ProductName</td>
+                    <td>@Product.CategoryName</td>
+                    <td>@Product.Price E£</td>
+                    <td>@Product.Stock</td>
+                    <td>@Product.DiscountPercentage%</td>
+                    <td>@Product.SupplierName</td>
+                    <td><a href="/products/editproduct/@Product.ProductID.ToString()" class="btn btn-info"><span class="oi oi-pencil"></span></a>&nbsp;<button class="btn btn-danger" @onclick="() => DeleteProduct(Product)"><span class="oi oi-trash"></span></button></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    private List<Product> Products;
+    private int Counter = 1;
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await Http.GetFromJsonAsync<List<Product>>("http://localhost:5000/api/Product");
+    }
+
+    protected async Task DeleteProduct(Product Product)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete product ?"); // Confirm
+        if (confirmed)
+        {
+            Products.Remove(Product);
+            await Http.DeleteAsync("http://localhost:5000/api/Product/" + Product.ProductID);
+        }
+        return;
+    }
+}

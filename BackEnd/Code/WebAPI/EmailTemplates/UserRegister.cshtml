@@ -1,0 +1,74 @@
+﻿@Model  Models.User
+
+<html>
+<body>
+    <div style="background-color:#fafafa;width: 100%;">
+        <table style="width: 80%;margin:auto">
+            <tr>
+                <td></td>
+                <td style="display:block!important;max-width:700px!important;margin:0 auto!important;clear:both!important;">
+
+                    <div style="padding:15px;max-width:700px;margin:0 auto;display:block;margin-top: 40px;">
+                        <table width="100%">
+                            <tr>
+                                <td style="text-align: center;" class="marB text-center">
+                                    <img style="margin: 15px 0;" src="cid:logo.png" width="55" />
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <table style="background-color: #ffffff;box-shadow: 0 1px 10px 1px rgba(69,65,78,.02);" width="100%">
+
+                                        <tr>
+                                            <td style="padding: 20px;border-bottom: thin solid #f0f0f0;text-align: center;">
+
+                                                <div class="">
+                                                    <h5 style="margin:0;font-weight: 400;font-size: 24px;color:#485055;"> @Model.FullName مرحبا </h5>
+                                                </div>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:10px 40px 10px 40px; text-align: center;color:#485055;">
+                                                <h3>.لقد قمت بتسجيل حساب لمؤسستك بنجاح. سوف نقوم بالاتصال بك قريبا</h3>
+                                                <p>!<a href="{{ homeURL }}" style="color: #17d5de;font-weight: bolder;">Enozom</a>  مرحبا بك في </p>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:10px 0px 40px 0px; text-align: center;">
+                                                <a href="{{ homeURL }}/login" style="background:#007ac1;color:#ffffff;padding:10px 12%;border-radius: 8px;text-decoration:none;font-size: 18px;">سجل دخولك الان</a>
+                                            </td>
+
+                                        </tr>
+
+
+                                        <tr>
+                                            <td style="padding:10px 30px 0px 30px;color:#485055;">
+                                                <p style="margin:0;line-height:1.4;font-size: 16px;">.شكرا جزيلا لاهتمامك وثقتك بنا</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="padding:0px 30px 10px 30px;color:#485055;">
+                                                <h4 style="margin-top:10px;">Enozom Team</h4>
+                                            </td>
+                                        </tr>
+
+                                    </table>
+                                    <!-- /social & contact -->
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <!-- /content -->
+
+                </td>
+                <td></td>
+            </tr>
+        </table>
+        <!-- /BODY -->
+    </div>
+</body>
+</html>
